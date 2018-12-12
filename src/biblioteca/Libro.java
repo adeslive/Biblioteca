@@ -28,12 +28,71 @@ public class Libro {
     private float multa_diaria;
     private float valor_libro;
     
-    public void prestar_libro(){
+    public static void prestar_libro(){
     
     }
     
-    public void devolucion_libro(){
-    
+    public float devolucion_libro(String cliente, String libro, int ndias){
+        List<String> lineas_libros = new ArrayList<>(); 
+        List<String> lineas = new ArrayList<>();
+        PrintWriter pw, pw2;
+        BufferedReader br;
+        float multa = this.calcular_multa(ndias);
+        int index = 0;
+        String linea;   
+        
+        try {
+            br = new BufferedReader(new FileReader("Prestamos.txt"));
+            while((linea = br.readLine()) != null){
+                lineas.add(linea);
+                if (linea.split(",")[0].equals(cliente)&&
+                    linea.split(",")[1].equals(libro) ){
+                    String p_mod = String.format("%s,%s,%s,%s,%s", cliente, libro,
+                                                 linea.split(",")[2], ndias, 
+                                                 "entregado");
+                    lineas.set(index, p_mod);
+                }
+                index++;
+            }
+            br.close();
+            
+            // Codigo,Nombre,Cantidad_Disp,Cantidad_P,3dias,masde3,multa,precio
+            br = new BufferedReader(new FileReader("Libros.txt"));
+            index=0;
+            while((linea = br.readLine()) != null){
+                lineas_libros.add(linea);
+                if (linea.split(",")[0].equals(libro)){
+                    String[] linea_a = linea.split(",");
+                    String p_mod = String.format("%s,%s,%s,%s,%s,%s,%s,%s",libro, 
+                                                 linea_a[1],
+                                                 Integer.parseInt(linea_a[2])+1,
+                                                 Integer.parseInt(linea_a[3])-1,
+                                                 linea_a[4],linea_a[5],linea_a[6],
+                                                 linea_a[7]);
+                    lineas_libros.set(index, p_mod);
+                }
+                index++;
+            }
+            br.close();
+            
+            pw2 = new PrintWriter(new FileWriter("Libros.txt"));
+            lineas_libros.stream().forEach(linea_libro ->{
+                pw2.println(linea_libro);
+            });          
+            pw2.close();
+            
+            pw = new PrintWriter(new FileWriter("Prestamos.txt"));
+            lineas.stream().forEach(linea_print ->{
+                pw.println(linea_print);
+            });
+            pw.close();
+  
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Libro.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Libro.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return multa;
     }
     
     public float calcular_multa(int ndias){
