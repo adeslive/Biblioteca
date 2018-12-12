@@ -31,7 +31,7 @@ public class Cliente {
                 FileWriter fw = new FileWriter("Clientes.txt");
                 PrintWriter pw = new PrintWriter(fw);
                 
-                pw.println(String.format("%d,%s,%d,%d", codigo, nombre,
+                pw.println(String.format("%s,%s,%d,%d", codigo, nombre,
                                          telefono, celular));
                 
                 pw.flush();
@@ -152,6 +152,7 @@ public class Cliente {
         return cant;
     }
     
+    // Funciona como prestamos activos y como historial al cambiar la condicion
     public void prestamos_condicion_cliente(int numero, String condicion){
         List<String> lineas = new ArrayList<>();
         String linea, nombre_cliente = null, libro = null;
@@ -174,8 +175,8 @@ public class Cliente {
             
             while((linea = br.readLine()) != null){
                 if(numero == Integer.parseInt(linea.split(",")[0])){
-                    if(linea.split(",")[2].equals(condicion)){
-                        lineas.add(linea);
+                    if(linea.split(",")[2].equals(condicion)){  //Cambia la condicion a "en espera"
+                        lineas.add(linea);                      // o entregado
                     }     
                 }
             }
