@@ -5,15 +5,21 @@
  */
 package biblioteca;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author adesl
  */
 public class Biblioteca {
 
-    /**
-     * @param args the command line arguments
-     */
+    List<Libro> biblioteca;
+    
+    public Biblioteca(){
+        biblioteca = new ArrayList<>();
+    }
+    
     public static void main(String[] args) {
         // TODO code application logic here
     }

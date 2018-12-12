@@ -108,7 +108,7 @@ public class Cliente {
                 br.close();
                 fr.close();
                 
-                cliente_editado = String.format("%d,%s,%d,%d", numero, nombre, telefono, celular);
+                cliente_editado = String.format("%s,%s,%d,%d", numero, nombre, telefono, celular);
                 lineas.set(Integer.parseInt(numero)-1, cliente_editado);
                 
                 FileWriter fw = new FileWriter("Clientes.txt");
@@ -122,7 +122,7 @@ public class Cliente {
                 pw.close();
                 fw.close();      
             }
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.out.print(e.getMessage());
         }
     }
@@ -153,11 +153,13 @@ public class Cliente {
     }
     
     // Funciona como prestamos activos y como historial al cambiar la condicion
-    public void prestamos_condicion_cliente(int numero, String condicion){
+    public void prestamos_activos_cliente(int numero, String condicion){
         List<String> lineas = new ArrayList<>();
-        String linea, nombre_cliente = null, libro = null;
+        String linea, nombre_cliente = null;
+        int index = 0;
         FileReader fr, fr2;
         BufferedReader br, br2;
+        
         try{
             fr2 = new FileReader("Clientes.txt");
             br2 = new BufferedReader(fr2);
@@ -175,7 +177,55 @@ public class Cliente {
             
             while((linea = br.readLine()) != null){
                 if(numero == Integer.parseInt(linea.split(",")[0])){
-                    if(linea.split(",")[2].equals(condicion)){  //Cambia la condicion a "en espera"
+                    if(linea.split(",")[2].equals("en espera")){
+                        lineas.add(linea);
+                    }     
+                }
+            }
+            br.close();
+            fr.close();
+                       
+            fr = new FileReader("Libros.txt");
+            br = new BufferedReader(fr);
+            
+            
+            while((linea = br.readLine()) != null){
+                if(lineas.get(index).split(",")[1].equals(linea.split(",")[0])){
+                    
+                    String linea_t = String.format("%s,%s", linea.split(",")[1],
+                                                   lineas.get(index).split(",")[2]);
+                    lineas.set(index, linea_t);
+                }
+                index++;
+            }     
+            br.close();
+            fr.close();
+            
+            for (String linea_iterador : lineas){
+                String[] linea_actual = linea_iterador.split(",");
+                System.out.println(String.format("%s,%s,%s", nombre_cliente, 
+                                                 linea_actual[1], linea_actual[2]));
+            }
+            
+        }catch (IOException e){
+        
+        }
+    }
+    
+    public void historial_cliente(int numero, String condicion){
+        List<String> lineas = new ArrayList<>();
+        String linea;
+        int index = 0;
+        FileReader fr;
+        BufferedReader br;
+        
+        try{
+            fr = new FileReader("Prestamos.txt");
+            br = new BufferedReader(fr);
+            
+            while((linea = br.readLine()) != null){
+                if(numero == Integer.parseInt(linea.split(",")[0])){
+                    if(linea.split(",")[2].equals("entregado")){  //Cambia la condicion a "en espera"
                         lineas.add(linea);                      // o entregado
                     }     
                 }
@@ -187,25 +237,24 @@ public class Cliente {
             br = new BufferedReader(fr);
             
             while((linea = br.readLine()) != null){
-                if(numero == Integer.parseInt(linea.split(",")[0])){
-                    libro=linea.split(",")[1];
+                if(lineas.get(index).split(",")[1].equals(linea.split(",")[0])){
+                    lineas.set(index, linea.split(",")[1]);
                 }
-            }     
+                index++;
+            }
+            
             br.close();
             fr.close();
             
-            for (String linea_iterador : lineas){
-                String[] linea_actual = linea_iterador.split(",");
-                System.out.println(String.format("%s,%s,%s,%s", nombre_cliente,libro,
-                                                linea_actual[2],linea_actual[3]));
-            }
+            lineas.stream().forEach((linea_iterador) -> {
+                System.out.println(linea_iterador.split(",")[0]);
+            });
             
         }catch (IOException e){
         
         }
     }
     
- 
     /**
      * @return the codigo
      */
