@@ -24,13 +24,17 @@ public class Utilitarios {
     }
     
     public static void cambiar_estado_prestamo(String cliente, String libro){
+        BufferedReader br;
+        FileReader fr;
+        FileWriter fw;
+        PrintWriter pw;
         try{
             List<String> lineas = new ArrayList<>();
             String linea;
             int nlineas=0;
             
-            FileReader fr = new FileReader("Prestamos.txt");
-            BufferedReader br = new BufferedReader(fr);
+            fr = new FileReader("Prestamos.txt");
+            br = new BufferedReader(fr);
             
             while((linea = br.readLine())!= null){
                 nlineas++;
@@ -48,8 +52,8 @@ public class Utilitarios {
             br.close();
             fr.close();
             
-            FileWriter fw = new FileWriter("Prestamos");
-            PrintWriter pw = new PrintWriter(fw);
+            fw = new FileWriter("Prestamos");
+            pw = new PrintWriter(fw);
             
             lineas.stream().forEach((linea_1) -> {
                 pw.println(linea_1);
@@ -65,11 +69,13 @@ public class Utilitarios {
     // C_C, C_L, Dias_P, Dia_E, Estado
     public static void nuevo_prestamo(String cliente, String libro, String dias){
         String linea;
+        FileReader fr;
+        BufferedReader br;
         try{
                 
             if(Cliente.contar_prestamos_clientes(cliente)<3){
-                FileReader fr = new FileReader("Prestamos.txt");
-                BufferedReader br = new BufferedReader(fr);
+                fr = new FileReader("Prestamos.txt");
+                br = new BufferedReader(fr);
                 
                 while((linea = br.readLine()) != null){
                     if(cliente.equals(linea.split(",")[0]) && 

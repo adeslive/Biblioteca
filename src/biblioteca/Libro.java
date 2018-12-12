@@ -6,6 +6,7 @@
 package biblioteca;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -49,12 +50,18 @@ public class Libro {
     }
     
     public Libro ingresar_libro(String codigo, String nombre, int cantidad,
-                               int cantidad_p, float costo3dias, float costo_masdias,
-                               float multa_diaria, float valor_libro){
+                                float costo3dias, float costo_masdias,
+                                float multa_diaria, float valor_libro){
+        BufferedReader br;
+        PrintWriter pw;
         Libro libro_nuevo = null;
         String linea;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("Libros.txt"));
+            if (!new File("Libros.txt").exists()){
+                new File("Libros.txt").createNewFile();
+            }
+            
+            br = new BufferedReader(new FileReader("Libros.txt"));
             
             while((linea = br.readLine()) != null){
                 if (linea.split(",")[0].equals(codigo) ||
@@ -65,17 +72,23 @@ public class Libro {
                 }
             }
             
-            
             libro_nuevo = new Libro();
-            
             libro_nuevo.codigo = codigo;
             libro_nuevo.nombre = nombre;
             libro_nuevo.cantidad = cantidad;
-            libro_nuevo.cantidad_p = cantidad_p;
+            libro_nuevo.cantidad_p = 0;
             libro_nuevo.costo3dias = costo3dias;
             libro_nuevo.costo_masdias = costo_masdias;
             libro_nuevo.multa_diaria = multa_diaria;
             libro_nuevo.valor_libro = valor_libro;
+            
+            br.close();
+            pw = new PrintWriter(new FileWriter("Libros.txt",true));
+            pw.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s",codigo, nombre,
+                                     cantidad, 0, costo3dias,
+                                     costo_masdias, multa_diaria, valor_libro));
+            
+            pw.close();
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Libro.class.getName()).log(Level.SEVERE, null, ex);
@@ -91,6 +104,9 @@ public class Libro {
         BufferedReader br;
         
         try {
+            if (!new File("Libros.txt").exists()){
+                new File("Libros.txt").createNewFile();
+            }
             br = new BufferedReader(new FileReader("Libros.txt"));
             while((linea = br.readLine()) != null){
                 lineas.add(linea);
