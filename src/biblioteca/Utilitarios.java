@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Utilitarios {
@@ -53,15 +54,45 @@ public class Utilitarios {
             fw = new FileWriter("Prestamos");
             pw = new PrintWriter(fw);
             
-            for(String linea_1 : lineas){
+            lineas.stream().forEach((linea_1) -> {
                 pw.println(linea_1);
-            }
+            });
             
             pw.close();
             fw.close();
             
         }catch(Exception e){
             
+        }
+    }
+    // C_C, C_L, Dias_P, Dia_E, Estado
+    public void nuevo_prestamo(String cliente, String libro, String dias){
+        String linea;
+        try{
+                
+            if(Cliente.contar_prestamos_clientes(cliente)<3){
+                fr = new FileReader("Prestamos.txt");
+                br = new BufferedReader(fr);
+                
+                while((linea = br.readLine()) != null){
+                    if(cliente.equals(linea.split(",")[0]) && 
+                       libro.equals(linea.split(",")[1]) &&
+                       "en espera".equals(linea.split(",")[4])){
+                        System.out.println("El cliente ya tiene en espera ese libro");
+                        return;
+                    }
+                }
+                
+                br.close();
+                fr.close();
+                
+                fw = new FileWriter("Prestamos",true);
+                pw = new PrintWriter(fw);
+                
+                pw.println(String.format("%s,%s,%s,%s,%s", cliente, libro,
+                           dias, "0", "en espera"));
+            }
+        }catch (IOException e){
         }
     }
     

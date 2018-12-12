@@ -22,12 +22,12 @@ public class Cliente {
     private int telefono;
     private int celular;
     
-    public void agregar_cliente(int codigo, String nombre, 
+    public void agregar_cliente(String codigo, String nombre, 
                                 int telefono, int celular)
     {
         try{
             
-            if (!cliente_existe(codigo)){
+            if (!buscar_cliente(codigo)){
                 FileWriter fw = new FileWriter("Clientes.txt");
                 PrintWriter pw = new PrintWriter(fw);
                 
@@ -44,7 +44,7 @@ public class Cliente {
         }
     }
     
-    public boolean cliente_existe(int codigo){
+    public static boolean buscar_cliente(String codigo){
         try{
             String linea;
             FileReader fr = new FileReader("Clientes.txt");
@@ -59,14 +59,14 @@ public class Cliente {
             br.close();
             fr.close();
         }catch (FileNotFoundException e){
-            Logger.logMsg(codigo, e.getMessage());
+
         }catch (IOException ex){
-            Logger.logMsg(codigo, ex.getMessage());
+
         }
         return false;
     }
     
-    public Cliente cliente_busqueda(int codigo){
+    public Cliente informacion_cliente(int codigo){
         Cliente cliente_busq = new Cliente();
         try{
             String linea;
@@ -77,8 +77,8 @@ public class Cliente {
                 if(linea.equals(linea.split(",")[0])){
                     cliente_busq.codigo = codigo;
                     cliente_busq.nombre = linea.split(",")[1];
-                    cliente_busq.telefono = Integer.parseInt(linea.split(",")[1]);
-                    cliente_busq.celular = Integer.parseInt(linea.split(",")[1]);
+                    cliente_busq.telefono = Integer.parseInt(linea.split(",")[2]);
+                    cliente_busq.celular = Integer.parseInt(linea.split(",")[3]);
                     
                     br.close();
                     fr.close();
@@ -93,12 +93,12 @@ public class Cliente {
         return null;
     }
     
-    public void editar_cliente(int numero){
+    public void editar_cliente(String numero){
         List<String> lineas = new ArrayList<>();
-        String cliente_editado = "";
+        String cliente_editado;
         try {
            
-            if (cliente_existe(numero)){
+            if (buscar_cliente(numero)){
                 FileReader fr = new FileReader("Clientes.txt");
                 BufferedReader br = new BufferedReader(fr);
 
@@ -109,14 +109,14 @@ public class Cliente {
                 fr.close();
                 
                 cliente_editado = String.format("%d,%s,%d,%d", numero, nombre, telefono, celular);
-                lineas.set(numero-1, cliente_editado);
+                lineas.set(Integer.parseInt(numero)-1, cliente_editado);
                 
                 FileWriter fw = new FileWriter("Clientes.txt");
                 PrintWriter pw = new PrintWriter(fw);
                 
-                for (String linea: lineas){
+                lineas.stream().forEach((linea) -> {
                     pw.println(linea);
-                }
+                });
 
                 fw.flush();
                 pw.close();
@@ -127,17 +127,17 @@ public class Cliente {
         }
     }
     
-    public int contar_prestamos_clientes(int numero){
+    public static int contar_prestamos_clientes(String numero){
         String linea;
         int cant=0;
-        if (cliente_existe(numero)){
+        if (buscar_cliente(numero)){
             try{
                 FileReader fr = new FileReader("Prestamos.txt");
                 BufferedReader br = new BufferedReader(fr);
                 
                 while((linea = br.readLine()) != null){
-                    if(numero == Integer.parseInt(linea.split(",")[0])){
-                        if(linea.split(",")[2].equals("en espera")){
+                    if(numero.equals(linea.split(",")[0])){
+                        if(linea.split(",")[4].equals("en espera")){
                             cant++;
                         }
                     }
@@ -145,7 +145,7 @@ public class Cliente {
                 
                 br.close();
                 fr.close();
-            }catch (Exception e){
+            }catch (IOException e){
                 
             }
         }
@@ -154,7 +154,7 @@ public class Cliente {
     
     public void prestamos_condicion_cliente(int numero, String condicion){
         List<String> lineas = new ArrayList<>();
-        String linea, nombre="", libro="";
+        String linea, nombre_cliente = null, libro = null;
         FileReader fr, fr2;
         BufferedReader br, br2;
         try{
@@ -162,7 +162,7 @@ public class Cliente {
             br2 = new BufferedReader(fr2);
             while((linea = br2.readLine()) != null){
                 if(numero == Integer.parseInt(linea.split(",")[0])){
-                    nombre=linea.split(",")[1];
+                    nombre_cliente=linea.split(",")[1];
                 }
             }
             
@@ -195,11 +195,11 @@ public class Cliente {
             
             for (String linea_iterador : lineas){
                 String[] linea_actual = linea_iterador.split(",");
-                System.out.println(String.format("%s,%s,%s,%s", nombre,libro,
+                System.out.println(String.format("%s,%s,%s,%s", nombre_cliente,libro,
                                                 linea_actual[2],linea_actual[3]));
             }
             
-        }catch (Exception e){
+        }catch (IOException e){
         
         }
     }
